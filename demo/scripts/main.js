@@ -51,7 +51,7 @@ function getWebcamTracker(colors) {
 			ctx.fillText('x: ' + rect.x + 'px', rect.x + rect.width + 5, rect.y + 11)
 			ctx.fillText('y: ' + rect.y + 'px', rect.x + rect.width + 5, rect.y + 22)			
 
-			tracker.emit(rect.color)
+			tracker.emit(rect.color, { data: event.data })
 
 		}
 
