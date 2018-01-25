@@ -149,14 +149,18 @@
 
 				}
 
-				image.onload = event => {
+				image.addEventListener('load', event => {
 
 					loadCount++
 
-					if (loadCount == this.numOfFrames)
+					if (loadCount == this.numOfFrames) {
+						
 						console.log(`${this.base} has load (${this.width}x${this.height}px ${this.numOfFrames} frames)`)
+						this.dispatchEvent('load')
 
-				}
+					}
+
+				})
 
 				this.images.push(image)
 
