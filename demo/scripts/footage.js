@@ -70,6 +70,7 @@
 		enabled: true,
 		loop: true,
 		visible: true,
+		paused: false,
 
 		blendMode: 'source-over',
 
