@@ -74,7 +74,7 @@ let motion = new Footage(
 	'data/motion/motion0040.jpg',
 	{ x: 1280 / 2, y: 720 / 2 })
 
-main.on('update', event => {
+motion.on('update', event => {
 
 	motion.x = 1280 / 2 + 400 * Math.sin(main.time / 10)
 	motion.rotation += .25

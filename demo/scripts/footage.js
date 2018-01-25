@@ -221,6 +221,9 @@
 
 			}
 
+			if (this.time !== this.timeOld)
+				this.dispatchEvent('update')
+
 		}
 
 		get progress() { return this.time / this.timeMax }
@@ -290,7 +293,8 @@
 		requestAnimationFrame(anim)
 
 		for (let footage of footages)
-			footage.update(1 / 60 * globalTimeScale)
+			if (footage.enabled)
+				footage.update(1 / 60 * globalTimeScale)
 
 	}
 
