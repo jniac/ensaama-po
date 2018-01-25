@@ -8,7 +8,7 @@
 
 	let imagesToLoad = []
 	let numImagesLoading = 0
-	let maxImagesLoading = 10
+	let maxImagesLoading = 20
 
 	function getImage(url) {
 
