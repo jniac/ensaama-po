@@ -1,4 +1,62 @@
-(function() {
+﻿(function() {
+
+	// > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > //
+	//                                                                                         //
+	//                            Gestion du chargement des images                             //
+	//                                                                                         //
+	// > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > //
+
+	let imagesToLoad = []
+	let numImagesLoading = 0
+	let maxImagesLoading = 10
+
+	function getImage(url) {
+
+		let image = new Image()
+
+		imagesToLoad.push({ image, url })
+
+		loadNextImages()
+
+		return image
+
+	}
+
+	function loadNextImages() {
+
+		while(imagesToLoad.length && numImagesLoading < maxImagesLoading) {
+
+			let { image, url } = imagesToLoad.shift()
+
+			image.src = url
+
+			image.addEventListener('load', event => {
+
+				numImagesLoading--
+
+				loadNextImages()
+
+			})
+
+			numImagesLoading++
+
+		}
+
+	}
+
+
+
+
+
+
+
+
+	// > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > //
+	//                                                                                         //
+	//                                       Footage                                           //
+	//                                                                                         //
+	// > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > //
+
 
 	let footages = []
 
@@ -8,9 +66,24 @@
 
 		fps: 24, 
 		zIndex: 0,
-		autoPlay: true,
+
+		enabled: true,
 		loop: true,
 		visible: true,
+
+		blendMode: 'source-over',
+
+		x: 0,
+		y: 0,
+		width: 0,
+		height: 0,
+		rotation: 0,
+		scale: 1,
+
+		anchorX: 0.5,
+		anchorY: 0.5,
+
+		showEdges: false,
 
 	}
 
@@ -25,19 +98,29 @@
 			this.id = footages.length
 			footages.push(this)
 
-			let [,base] = startURL.match(/(.*?)\d{3,4}\.\w+/)
-			let [ext] = startURL.match(/\.\w+/)
-			let indexLength = startURL.match(/\d{3,4}/)[0].length
+			try {
 
-			let [,startIndex] = (startURL.match(/(\d{3,4})\.\w+$/) || []).map(parseFloat)
-			let [,endIndex] = (endURL.match(/(\d{3,4})\.\w+$/) || []).map(parseFloat)
+				let [,base] = startURL.match(/(.*?)\d{3,6}\.\w+/)
+				let [ext] = startURL.match(/\.\w+/)
+				let indexLength = startURL.match(/\d{3,6}/)[0].length
 
-			this.base = base
-			this.ext = ext
-			this.indexLength = indexLength
-			this.startIndex = startIndex
-			this.endIndex = endIndex
-			this.numOfFrames = endIndex - startIndex
+				let [,startIndex] = (startURL.match(/(\d{3,6})\.\w+$/) || []).map(parseFloat)
+				let [,endIndex] = (endURL.match(/(\d{3,6})\.\w+$/) || []).map(parseFloat)
+
+				this.base = base
+				this.ext = ext
+				this.indexLength = indexLength
+				this.startIndex = startIndex
+				this.endIndex = endIndex
+				this.numOfFrames = endIndex - startIndex
+
+			} catch (e) {
+
+				console.error(`arguments invalides  !!!\n(startURL: ${startURL}, endURL: ${endURL}) \nle footage est désactivé`)
+
+				this.enabled = false
+
+			}
 
 			this.currentIndex = 0
 			this.time = 0
@@ -45,27 +128,31 @@
 			this.timeMax = this.numOfFrames / this.fps
 
 			this.images = []
-
-			this.paused = !this.autoPlay
 			
-			var that = this
-
 			let loadCount = 0
 
-			for (let i = startIndex; i <= endIndex; i++) {
+			for (let i = this.startIndex; i <= this.endIndex; i++) {
 
-				let image = new Image()
-				let src = base + i.toFixed().padStart(indexLength, '0') + ext
+				let src = this.base + i.toFixed().padStart(this.indexLength, '0') + this.ext
+				let image = getImage(src)
 
-				// chargement des images
-				image.src = src
+				if (i === this.startIndex) {
+
+					image.addEventListener('load', event => {
+
+						this.width = event.target.naturalWidth
+						this.height = event.target.naturalHeight
+
+					})
+
+				}
 
 				image.onload = event => {
 
 					loadCount++
 
 					if (loadCount == this.numOfFrames)
-						console.log(`${base} has load (${this.numOfFrames} frames)`)
+						console.log(`${this.base} has load (${this.width}x${this.height}px ${this.numOfFrames} frames)`)
 
 				}
 
@@ -77,10 +164,7 @@
 
 		update(dt = 1 / 60) {
 
-			if (this.paused)
-				return
-
-			this.time += dt * this.timeScale
+			this.time += dt * this.timeScale * (this.paused ? 0 : 1)
 
 			if (this.time > this.timeMax) {
 
@@ -130,17 +214,8 @@
 
 		}
 
-		next() {
-
-			this.currentIndex++
-
-			if (this.currentIndex < this.startIndex)
-				this.currentIndex = this.endIndex
-
-			if (this.currentIndex > this.endIndex)
-				this.currentIndex = this.startIndex
-
-		}
+		get progress() { return this.time / this.timeMax }
+		set progress(value) { this.time = this.timeMax * value }
 
 		get currentImage() { 
 
@@ -150,8 +225,26 @@
 
 		draw(ctx, offsetX = 0, offsetY = 0) {
 
-			if (this.currentImage)
-				ctx.drawImage(this.currentImage, offsetX, offsetY)
+			if (!this.currentImage || !this.currentImage.complete)
+				return
+
+			ctx.setTransform(1, 0, 0, 1, 0, 0)
+
+			ctx.translate(this.x, this.y)
+			ctx.scale(this.scale, this.scale)
+			ctx.rotate(this.rotation * Math.PI / 180)
+			ctx.translate(-this.width * this.anchorX, -this.height * this.anchorY)
+
+			ctx.globalCompositeOperation = this.blendMode
+
+			ctx.drawImage(this.currentImage, offsetX, offsetY)
+
+			if (this.showEdges) {
+
+				ctx.rect(0, 0, this.width, this.height)
+				ctx.stroke()
+
+			}
 
 		}
 
@@ -172,7 +265,7 @@
 		static drawAll(ctx) {
 
 			for (let footage of footages.sort((A, B) => A.zIndex - B.zIndex))
-				if (footage.visible)
+				if (footage.enabled && footage.visible)
 					footage.draw(ctx)
 
 		}

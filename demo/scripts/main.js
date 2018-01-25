@@ -1,21 +1,72 @@
+let main = {
 
-const WIDTH = 1280
-const HEIGHT = 720
+	mouse: { 
 
-let canvas = document.querySelector('canvas.main')
-let ctx = canvas.getContext('2d')
+		x: 0, 
+		y: 0, 
+		relativeX: 0, 
+		relativeY: 0,
 
-function anim() {
+	},
 
-	requestAnimationFrame(anim)
+	init(WIDTH = 1280, HEIGHT = 720) {
 
-	ctx.clearRect(0, 0, WIDTH, HEIGHT)
+		let canvas = document.querySelector('canvas.main')
+		canvas.width = WIDTH
+		canvas.height = HEIGHT
 
-	Footage.drawAll(ctx)
+		canvas.addEventListener('mousemove', event => {
+
+			this.mouse.x = event.offsetX
+			this.mouse.y = event.offsetY
+			this.mouse.relativeX = event.offsetX / WIDTH
+			this.mouse.relativeY = event.offsetY / HEIGHT
+
+			this.dispatchEvent('mousemove', { mouse: this.mouse })
+
+		})
+
+
+		let ctx = canvas.getContext('2d')
+
+		Object.assign(this, { canvas, ctx })
+
+		this.updateArray = []
+
+		this.time = 0
+
+		let anim = () => {
+
+			requestAnimationFrame(anim)
+
+			ctx.setTransform(1, 0, 0, 1, 0, 0)
+			ctx.clearRect(0, 0, WIDTH, HEIGHT)
+
+			Footage.drawAll(ctx)
+
+			let tmp = this.updateArray
+			this.updateArray = []
+			this.updateArray = tmp.filter(listener => listener.callback() !== false).concat(this.updateArray)
+
+			this.dispatchEvent('update')
+
+			this.time += 1 / 60
+
+		}
+
+		anim()
+
+	},
+
+	onUpdate(callback) {
+
+		this.updateArray.push({ callback })
+
+	}
 
 }
 
-anim()
+eventjs.implementEventDispatcher(main)
 
 
 
@@ -26,8 +77,11 @@ anim()
 
 
 
-
-
+// > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > //
+//                                                                                     //
+//                                    VIDEO                                            //
+//                                                                                     //
+// > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > //
 
 function getWebcamTracker(colors) {
 
@@ -51,7 +105,7 @@ function getWebcamTracker(colors) {
 			ctx.fillText('x: ' + rect.x + 'px', rect.x + rect.width + 5, rect.y + 11)
 			ctx.fillText('y: ' + rect.y + 'px', rect.x + rect.width + 5, rect.y + 22)			
 
-			tracker.emit(rect.color, { rect })
+			tracker.emit(rect.color)
 
 		}
 
@@ -64,45 +118,6 @@ function getWebcamTracker(colors) {
 
 
 
-// // let video1 = document.getElementById('video1')
-// let canvas1 = document.getElementById('canvas1')
-// let context1 = canvas1.getContext('2d')
-
-// // syntaxe : tracking.ColorTracker(option_colors)
-// // exp : (['magenta', 'cyan', 'yellow']) / default () : 'magenta'
-// // let tracker1 = new tracking.ColorTracker(['yellow','cyan'])  
-
-// trackerTask1 = tracking.track('#webcam1', tracker1, { camera: true })
-// console.log("Tracker1 running ...")
-
-// tracker1.on('track', function(event) {
-
-//     context1.clearRect(0, 0, canvas1.width, canvas1.height)
-
-//     event.data.forEach(function(rect) {
-// 		setTimeout(function () {
-// 			trackersStop()
-// 		}, 0)
-		
-// 		if (rect.color === 'custom') {
-// 			rect.color = tracker1.customColor
-// 		}
-// 		console.log("Tracker1 find : "+rect.color)
-		
-// 		// reperes detection
-// 		context1.strokeStyle = rect.color
-// 		context1.strokeRect(rect.x, rect.y, rect.width, rect.height)
-// 		context1.font = '11px Helvetica'
-// 		context1.fillStyle = "#fff"
-// 		context1.fillText('x: ' + rect.x + 'px', rect.x + rect.width + 5, rect.y + 11)
-// 		context1.fillText('y: ' + rect.y + 'px', rect.x + rect.width + 5, rect.y + 22)			
-					
-// 		playVid(rect.color,function () {
-// 			trackersReStart()
-// 		})
-
-//     })
-// }) 
 
 
 
@@ -121,7 +136,43 @@ function getWebcamTracker(colors) {
 //                                                                                     //
 // > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > //
 
-let input = new p5.AudioIn()
+function getAudioTracker(thresholds) {
+
+	let input = new p5.AudioIn()
+	input.start()
+
+	let analyzer = new p5.Amplitude()
+	analyzer.setInput(input)
+
+	let index = -1
+
+	let tracker = new eventjs.EventDispatcher()
+
+	main.onUpdate(() => {
+
+		let level = analyzer.getLevel()
+
+		// console.log(level)
+
+		let newIndex = 0
+
+		while(thresholds[newIndex] < level)
+			newIndex++
+
+		if (index !== newIndex) {
+
+			index = newIndex
+
+			tracker.dispatchEvent('change level-' + index, { index, level })
+
+		}
+
+
+	})
+
+ 	return tracker
+
+}
 
 
 

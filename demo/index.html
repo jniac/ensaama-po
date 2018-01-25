@@ -1,9 +1,194 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title></title>
+	<title>Demo</title>
+
+	<link rel="stylesheet" type="text/css" href="styles/main.css">
+
+	<script type="text/javascript" src="scripts/event.js"></script>
+	<script type="text/javascript" src="scripts/footage.js"></script>
+	<script type="text/javascript" src="scripts/p5.min.js"></script>
+	<script type="text/javascript" src="scripts/p5.sound.min.js"></script>
+	<script type="text/javascript" src="scripts/tracking-min.js"></script>
 </head>
 <body>
+
+
+
+<!-- THE STAGE! (where things happen) -->
+<div id="stage">
+
+	<div class="background" style="background-image: url(data/une-super-image.jpg)"></div>
+
+	<canvas class="main"></canvas>
+	
+</div>
+
+
+
+<!-- HELPERS! (do not forget to hide in production!) -->
+<div id="helper">
+	<video id="webcam"  width="400" height="300" preload autoplay loop muted></video>
+	<canvas id="tracker" width="400" height="300"></canvas>
+</div>
+
+
+
+<script type="text/javascript" src="./scripts/main.js"></script>
+<script type="text/javascript">
+
+
+
+// > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > //
+//                                                                                         //
+//                             App Script (l'application quoi)                             //
+//                                                                                         //
+// > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > //
+
+
+
+// intialisation de la scène (footage, canvas) avec les dimensions spécifiées en pixels
+main.init(1280, 720)
+
+
+
+
+
+
+
+
+
+
+
+// > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > //
+/*
+	Motion:
+	Comportement attendu :
+		Le métrage se joue en boucle
+		À chaque nouvelle image (on("update")) le métrage change de position, de rotation et d'échelle
+
+*/
+
+let motion = new Footage(
+	'data/motion/motion0000.jpg', 
+	'data/motion/motion0040.jpg',
+	{ x: 1280 / 2, y: 720 / 2 })
+
+main.on('update', event => {
+
+	motion.x = 1280 / 2 + 400 * Math.sin(main.time / 10)
+	motion.rotation += .25
+	motion.scale = .5 + .1 * Math.sin(main.time * 10)
+
+})
+
+
+
+
+
+
+
+
+
+
+
+
+// > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > //
+/*
+	Autruche:
+	Comportement attendu :
+		Le métrage se joue en boucle
+		Lorsque le curseur passe sur la droite de l'écran (main.mouse.relativeX > .5), 
+			le mode de fusion du métrage passe en produit ("multiply").
+			Pour la liste des modes de fusion disponibles voir :
+			https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation
+
+*/
+let autruche = new Footage(
+	'data/autruche/0000.png', 
+	'data/autruche/0216.png',
+	{ x: 1280 / 2, y: 720 / 2, zIndex: 10 })
+
+main.on('mousemove', event => {
+
+	if (main.mouse.relativeX < .5) {
+
+		autruche.blendMode = 'normal'
+
+	} else {
+
+		autruche.blendMode = 'multiply'
+
+	}
+
+})
+
+
+
+
+
+
+
+
+
+
+
+
+// > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > //
+/*
+	Otarie:
+	Comportement attendu :
+		Le métrage ne se jouera jamais en boucle (loop: false)
+		Le métrage est "downscalé" de 0.5
+		Le métrage est décalé de 10px par rapport au bord de l'écran
+		Les bords du métrage sont soulignés en noir
+		Le métrage est à l'arrêt par défaut (pause)
+		Quand du jaune apparaît dans le champ de la webcam, le métrage se joue en sens normal
+		Lorsqu'un bruit d'amplitude supérieur à 0.2 est capté par le micro, le métrage se joue en sens inverse
+*/
+
+let otarie = new Footage(
+	'data/otarie/Otarie0001.png',
+	'data/otarie/Otarie0037.png',
+	{
+		x: 10,
+		y: 10,
+		anchorX: 0,
+		anchorY: 0,
+		paused: true, 
+		loop: false, 
+		scale: 0.5, 
+		showEdges: true, 
+	})
+
+getWebcamTracker(['yellow', 'cyan'])
+	.on('yellow', event => {
+
+		otarie.timeScale = 1
+		otarie.paused = false
+
+	})
+
+getAudioTracker([.2])
+	.on('level-1', event => {
+
+		otarie.timeScale = -1
+		otarie.paused = false
+
+	})
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
 
 </body>
 </html>
