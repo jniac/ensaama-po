@@ -16,7 +16,7 @@ transforms, blend modes, timeScale
 let footage = new Footage(
 	'a-folder/an-image-with-index-XXXX.png', // start url
 	'a-folder/an-image-with-index-XXXX.png', // end url
-	{ ...options 
+	{ ...options })
 
 // where options are (default) :
 
