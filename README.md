@@ -87,7 +87,7 @@ footage.on('update', event => {
 useful properties : 
 x, y, scale, progress etc...
 
-```
+```javascript
 
 footage.on('update', event => {
 
