@@ -44,6 +44,8 @@ let footage = new Footage(
 	anchorX: 0.5,
 	anchorY: 0.5,
 
+	opacity: 1,
+
 	showEdges: false,
 
 }
@@ -66,7 +68,7 @@ footage.on('load', event => {
 
 footage.on('loop', event => {
 
-	// footage.time reach footage.timeMax (or 0, if footage.timeScale < 0)
+	// footage.time has reached footage.timeMax (or 0, if footage.timeScale < 0)
 
 })
 
@@ -87,7 +89,7 @@ footage.on('change', event => {
 
 footage.on('update', event => {
 	
-	// the footage has been updated (since footage.enabled === true)
+	// the footage has been updated (60 times per second, since footage.enabled === true)
 
 })
 
@@ -95,7 +97,7 @@ footage.on('update', event => {
 
 ### useful properties: 
 
-x, y, scale, progress etc...
+x, y, scale, opacity, progress (get/set) etc...
 
 ```javascript
 
@@ -113,7 +115,7 @@ footage.on('update', event => {
 
 window.addEventListener('mousemove', event => {
 
-	footage.progress = event.offsetX / window.innerWidth
+	footage.progress = event.pageX / window.innerWidth
 
 })
 

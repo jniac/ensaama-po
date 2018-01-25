@@ -86,9 +86,30 @@
 		anchorX: 0.5,
 		anchorY: 0.5,
 
+		opacity: 1,
+
 		showEdges: false,
 
 	}
+
+	function processNumericalValue(x, relativeSpace) {
+
+		switch(typeof x) {
+
+			case 'number':
+				return x
+
+			case 'string':
+				return x.slice(-1) === '%' ? (parseFloat(x) / 100 * relativeSpace) : 0
+
+			default:
+				return 0
+
+		}
+
+	}
+
+	console.log(processNumericalValue('10%'))
 
 	class Footage extends eventjs.EventDispatcher {
 
@@ -101,69 +122,103 @@
 			this.id = footages.length
 			footages.push(this)
 
-			try {
-
-				let [,base] = startURL.match(/(.*?)\d{3,6}\.\w+/)
-				let [ext] = startURL.match(/\.\w+/)
-				let indexLength = startURL.match(/\d{3,6}/)[0].length
-
-				let [,startIndex] = (startURL.match(/(\d{3,6})\.\w+$/) || []).map(parseFloat)
-				let [,endIndex] = (endURL.match(/(\d{3,6})\.\w+$/) || []).map(parseFloat)
-
-				this.base = base
-				this.ext = ext
-				this.indexLength = indexLength
-				this.startIndex = startIndex
-				this.endIndex = endIndex
-				this.numOfFrames = endIndex - startIndex
-
-			} catch (e) {
-
-				console.error(`arguments invalides  !!!\n(startURL: ${startURL}, endURL: ${endURL}) \nle footage est désactivé`)
-
-				this.enabled = false
-
-			}
-
 			this.currentIndex = 0
 			this.time = 0
 			this.timeScale = 1
-			this.timeMax = this.numOfFrames / this.fps
+			this.timeMax = 0
 
 			this.images = []
 			
-			let loadCount = 0
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
 
-			for (let i = this.startIndex; i <= this.endIndex; i++) {
+			// n frame footage			
+			if (startURL && endURL) {
 
-				let src = this.base + i.toFixed().padStart(this.indexLength, '0') + this.ext
-				let image = getImage(src)
+				try {
 
-				if (i === this.startIndex) {
+					let [,base] = startURL.match(/(.*?)\d{3,6}\.\w+/)
+					let [ext] = startURL.match(/\.\w+/)
+					let indexLength = startURL.match(/\d{3,6}/)[0].length
 
-					image.addEventListener('load', event => {
+					let [,startIndex] = (startURL.match(/(\d{3,6})\.\w+$/) || []).map(parseFloat)
+					let [,endIndex] = (endURL.match(/(\d{3,6})\.\w+$/) || []).map(parseFloat)
 
-						this.width = event.target.naturalWidth
-						this.height = event.target.naturalHeight
+					this.base = base
+					this.ext = ext
+					this.indexLength = indexLength
+					this.startIndex = startIndex
+					this.endIndex = endIndex
+					this.numOfFrames = endIndex - startIndex
+					this.timeMax = this.numOfFrames / this.fps
 
-					})
+				} catch (e) {
+
+					console.error(`arguments invalides  !!!\n(startURL: ${startURL}, endURL: ${endURL}) \nle footage est désactivé`)
+
+					this.enabled = false
 
 				}
 
-				image.addEventListener('load', event => {
+				let loadCount = 0
 
-					loadCount++
+				for (let i = this.startIndex; i <= this.endIndex; i++) {
 
-					if (loadCount == this.numOfFrames) {
-						
-						console.log(`${this.base} has load (${this.width}x${this.height}px ${this.numOfFrames} frames)`)
-						this.dispatchEvent('load')
+					let src = this.base + i.toFixed().padStart(this.indexLength, '0') + this.ext
+					let image = getImage(src)
+
+					if (i === this.startIndex) {
+
+						image.addEventListener('load', event => {
+
+							this.width = event.target.naturalWidth
+							this.height = event.target.naturalHeight
+
+						})
 
 					}
 
+					image.addEventListener('load', event => {
+
+						loadCount++
+
+						if (loadCount == this.numOfFrames) {
+							
+							console.log(`${this.base} has been loaded (${this.width}x${this.height}px ${this.numOfFrames} frames)`)
+							this.dispatchEvent('load')
+
+						}
+
+					})
+
+					this.images.push(image)
+
+				}
+				
+			}
+
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
+
+			// one frame footage
+			if (startURL && !endURL) {
+
+				this.numOfFrames = 1
+				this.currentIndex = 0
+				this.startIndex = 0
+				this.endIndex = 0
+
+				let image = getImage(startURL)
+
+				image.addEventListener('load', event => {
+
+					this.width = image.naturalWidth
+					this.height = image.naturalHeight
+
+					console.log(`${startURL} has been loaded (${this.width}x${this.height}px one single frame)`)
+					this.dispatchEvent('load')
+
 				})
 
-				this.images.push(image)
+				this.images.push(image)				
 
 			}
 
@@ -244,9 +299,14 @@
 			if (!this.currentImage || !this.currentImage.complete)
 				return
 
+
+			ctx.globalAlpha = this.opacity
 			ctx.setTransform(1, 0, 0, 1, 0, 0)
 
-			ctx.translate(this.x, this.y)
+			let x = processNumericalValue(this.x, ctx.canvas.width)
+			let y = processNumericalValue(this.y, ctx.canvas.height)
+
+			ctx.translate(x, y)
 			ctx.scale(this.scale * this.scaleX, this.scale * this.scaleY)
 			ctx.rotate(this.rotation * Math.PI / 180)
 			ctx.translate(-this.width * this.anchorX, -this.height * this.anchorY)

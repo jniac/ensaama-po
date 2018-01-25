@@ -54,7 +54,22 @@ main.init(1280, 720)
 
 
 
+// > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > //
+/*
+	Background:
+	Comportement attendu :
+		Footage statique, utilisé comme arrière plan
+		(lorsqu'une seule url est spécifié, Footage se comporte comme une simple image)
 
+*/
+let background = new Footage(
+	'data/El_Greco_View_of_Toledo.jpg',
+	null,
+	{
+		x: '50%',
+		y: '50%',
+		scale: 1280/848,
+	})
 
 
 
@@ -66,7 +81,7 @@ main.init(1280, 720)
 	Motion:
 	Comportement attendu :
 		Le métrage se joue en boucle
-		À chaque nouvelle image (on("update")) le métrage change de position, de rotation et d'échelle
+		À chaque nouvelle image (on("update")) le métrage change de position, de rotation, d'échelle et d'opacité
 
 */
 
@@ -80,6 +95,7 @@ motion.on('update', event => {
 	motion.x = 1280 / 2 + 400 * Math.sin(main.time / 10)
 	motion.rotation += .25
 	motion.scale = .5 + .1 * Math.sin(main.time * 10)
+	motion.opacity = .75 + .25 * Math.sin(main.time * 10)
 
 })
 
@@ -203,6 +219,29 @@ getAudioTracker([.2])
 	})
 
 
+
+
+
+
+
+
+
+// > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > //
+/*
+	Rain:
+	Comportement attendu :
+		blendMode screen : la pluie se superpose par transparence aux métrages présents, sauf un : l'autruche (zIndex oblige !)
+*/
+
+let rain = new Footage(
+	'data/rain/rain000.jpg',
+	'data/rain/rain199.jpg',
+	{
+		blendMode: 'screen',
+		x: '50%',
+		y: '50%',
+		scale: 1.5,
+	})
 
 
 
