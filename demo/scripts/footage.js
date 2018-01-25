@@ -171,7 +171,8 @@
 
 		update(dt = 1 / 60) {
 
-			this.timeOld = this.time
+			this.dispatchEvent('update')
+
 			this.time += dt * this.timeScale * (this.paused ? 0 : 1)
 
 			if (this.time >= this.timeMax) {
@@ -218,17 +219,19 @@
 
 			} else {
 
-				this.currentIndex = this.numOfFrames - 1
+				this.currentIndex = this.endIndex
 
 			}
 
 			if (this.time !== this.timeOld)
-				this.dispatchEvent('update')
+				this.dispatchEvent('change')
+
+			this.timeOld = this.time
 
 		}
 
 		get progress() { return this.time / this.timeMax }
-		set progress(value) { this.time = this.timeMax * value }
+		set progress(value) { this.time = this.timeMax * (value < 0 ? 0 : value > 1 ? 1 : value) }
 
 		get currentImage() { 
 

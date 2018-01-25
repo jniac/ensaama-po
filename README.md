@@ -53,7 +53,7 @@ _with_ & _height_ are set from actual image size (from the first image)
 
 ### events:
 
-footage dispatch events (thanks to event.js)
+footage dispatch events (thanks to event.js)  
 load, loop, complete, update
 
 ```javascript
@@ -78,10 +78,16 @@ footage.on('complete', event => {
 
 })
 
-footage.on('update', event => {
+footage.on('change', event => {
 
 	// footage.time has changed !
-	// so update is not triggered when footage.paused === true
+	// so 'change' is not triggered when footage.paused === true (or when footage.timeScale === 0, or when the footage is complete etc.)
+
+})
+
+footage.on('update', event => {
+	
+	// the footage has been updated (since footage.enabled === true)
 
 })
 
@@ -100,6 +106,14 @@ footage.on('update', event => {
 	// amazing animation!
 	// when footage.time = 0 : footage.progress === 0
 	// when footage.time = footage.timeMax : footage.progress === 1
+
+})
+
+// or
+
+window.addEventListener('mousemove', event => {
+
+	footage.progress = event.offsetX / window.innerWidth
 
 })
 
