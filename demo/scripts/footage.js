@@ -79,6 +79,8 @@
 		height: 0,
 		rotation: 0,
 		scale: 1,
+		scaleX: 1,
+		scaleY: 1,
 
 		anchorX: 0.5,
 		anchorY: 0.5,
@@ -164,9 +166,10 @@
 
 		update(dt = 1 / 60) {
 
+			this.timeOld = this.time
 			this.time += dt * this.timeScale * (this.paused ? 0 : 1)
 
-			if (this.time > this.timeMax) {
+			if (this.time >= this.timeMax) {
 
 				if (this.loop) {
 
@@ -178,7 +181,8 @@
 
 					this.time = this.timeMax
 
-					this.dispatchEvent('complete')
+					if (this.timeOld < this.timeMax)
+						this.dispatchEvent('complete')
 
 				}
 
@@ -196,7 +200,8 @@
 
 					this.time = 0
 
-					this.dispatchEvent('complete')
+					if (this.timeOld > 0)
+						this.dispatchEvent('complete')
 
 				}
 
@@ -231,7 +236,7 @@
 			ctx.setTransform(1, 0, 0, 1, 0, 0)
 
 			ctx.translate(this.x, this.y)
-			ctx.scale(this.scale, this.scale)
+			ctx.scale(this.scale * this.scaleX, this.scale * this.scaleY)
 			ctx.rotate(this.rotation * Math.PI / 180)
 			ctx.translate(-this.width * this.anchorX, -this.height * this.anchorY)
 
@@ -241,6 +246,7 @@
 
 			if (this.showEdges) {
 
+				ctx.beginPath()
 				ctx.rect(0, 0, this.width, this.height)
 				ctx.stroke()
 

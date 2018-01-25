@@ -98,6 +98,7 @@ main.on('update', event => {
 	Autruche:
 	Comportement attendu :
 		Le métrage se joue en boucle
+		Lorsque la vidéo se rejoue (on('loop')), la vidéo "flip" "horizontallement"
 		Lorsque le curseur passe sur la droite de l'écran (main.mouse.relativeX > .5), 
 			le mode de fusion du métrage passe en produit ("multiply").
 			Pour la liste des modes de fusion disponibles voir :
@@ -108,6 +109,13 @@ let autruche = new Footage(
 	'data/autruche/0000.png', 
 	'data/autruche/0216.png',
 	{ x: 1280 / 2, y: 720 / 2, zIndex: 10 })
+
+autruche.on('loop', event => {
+
+	// flip horizontally
+	autruche.scaleX *= -1
+
+})
 
 main.on('mousemove', event => {
 
@@ -134,6 +142,7 @@ main.on('mousemove', event => {
 
 
 
+
 // > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > //
 /*
 	Otarie:
@@ -145,6 +154,7 @@ main.on('mousemove', event => {
 		Le métrage est à l'arrêt par défaut (pause)
 		Quand du jaune apparaît dans le champ de la webcam, le métrage se joue en sens normal
 		Lorsqu'un bruit d'amplitude supérieur à 0.2 est capté par le micro, le métrage se joue en sens inverse
+		Lorsque la vidéo arrive à terme (on('complete')), la vidéo "flip" "horizontallement"
 */
 
 let otarie = new Footage(
@@ -152,14 +162,21 @@ let otarie = new Footage(
 	'data/otarie/Otarie0037.png',
 	{
 		x: 10,
-		y: 10,
+		y: 10 + 720 / 4,
 		anchorX: 0,
-		anchorY: 0,
+		anchorY: 0.5,
 		paused: true, 
 		loop: false, 
 		scale: 0.5, 
 		showEdges: true, 
 	})
+
+otarie.on('complete', event => {
+
+	// flip vertically
+	otarie.scaleY *= -1
+
+})
 
 getWebcamTracker(['yellow', 'cyan'])
 	.on('yellow', event => {
