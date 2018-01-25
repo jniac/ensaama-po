@@ -8,9 +8,9 @@ lancer la page index.html (pas besoin de serveur local)
 # footage.js
 ### features!
 
-transforms, blend modes, timeScale
+events, transforms, blend modes, timeScale
 
-
+### basic usage:
 
 ```javascript
 let footage = new Footage(
@@ -50,6 +50,8 @@ let footage = new Footage(
 
 _with_ & _height_ are set from actual image size (from the first image)
 
+### events:
+
 footage dispatch events (thanks to event.js)
 load, loop, complete, update
 
@@ -84,7 +86,8 @@ footage.on('update', event => {
 
 ```
 
-useful properties : 
+### useful properties: 
+
 x, y, scale, progress etc...
 
 ```javascript
