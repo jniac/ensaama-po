@@ -105,3 +105,8 @@ footage.on('update', event => {
 ```
 
 enjoy!
+
+### links
+
+blend modes in canvas:  
+[MDN docs, CanvasRenderingContext2D.globalCompositeOperation](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation)

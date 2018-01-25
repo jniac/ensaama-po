@@ -19,7 +19,7 @@
 <!-- THE STAGE! (where things happen) -->
 <div id="stage">
 
-	<div class="background" style="background-image: url(data/une-super-image.jpg)"></div>
+	<div class="background" style="background-image: url(data/une-super-image.svg)"></div>
 
 	<canvas class="main"></canvas>
 	
@@ -99,7 +99,7 @@ motion.on('update', event => {
 	Autruche:
 	Comportement attendu :
 		Le métrage se joue en boucle
-		Lorsque la vidéo se rejoue (on('loop')), la vidéo "flip" "horizontallement"
+		Lorsque la vidéo se rejoue (on('loop')), la vidéo "flip" "horizontalement"
 		Lorsque le curseur passe sur la droite de l'écran (main.mouse.relativeX > .5), 
 			le mode de fusion du métrage passe en produit ("multiply").
 			Pour la liste des modes de fusion disponibles voir :
@@ -155,7 +155,7 @@ main.on('mousemove', event => {
 		Le métrage est à l'arrêt par défaut (pause)
 		Quand du jaune apparaît dans le champ de la webcam, le métrage se joue en sens normal
 		Lorsqu'un bruit d'amplitude supérieur à 0.2 est capté par le micro, le métrage se joue en sens inverse
-		Lorsque la vidéo arrive à terme (on('complete')), la vidéo "flip" "horizontallement"
+		Lorsque la vidéo arrive à terme (on('complete')), la vidéo "flip" "verticalement"
 */
 
 let otarie = new Footage(
@@ -179,21 +179,21 @@ otarie.on('complete', event => {
 
 })
 
-getWebcamTracker(['yellow', 'cyan'])
-	.on('yellow', event => {
+// getWebcamTracker(['yellow', 'cyan'])
+// 	.on('yellow', event => {
 
-		otarie.timeScale = 1
-		otarie.paused = false
+// 		otarie.timeScale = 1
+// 		otarie.paused = false
 
-	})
+// 	})
 
-getAudioTracker([.2])
-	.on('level-1', event => {
+// getAudioTracker([.2])
+// 	.on('level-1', event => {
 
-		otarie.timeScale = -1
-		otarie.paused = false
+// 		otarie.timeScale = -1
+// 		otarie.paused = false
 
-	})
+// 	})
 
 
 
