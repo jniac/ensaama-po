@@ -100,9 +100,8 @@ motion.on('update', event => {
 	Comportement attendu :
 		Le métrage se joue en boucle
 		Lorsque la vidéo se rejoue (on('loop')), la vidéo "flip" "horizontalement"
-		Lorsque le curseur passe sur la droite de l'écran (main.mouse.relativeX > .5), 
-			le mode de fusion du métrage passe en produit ("multiply").
-			Pour la liste des modes de fusion disponibles voir :
+		Le mode de fusion (normal, multiply, screen, overlay) du métrage change en fonction de la position du curseur (main.mouse) 
+			Pour la liste des modes de fusion disponibles (à peu de chose près les mêmes que photoshop) voir :
 			https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation
 
 */
@@ -120,13 +119,21 @@ autruche.on('loop', event => {
 
 main.on('mousemove', event => {
 
-	if (main.mouse.relativeX < .5) {
+	if (main.mouse.relativeX < .25) {
 
 		autruche.blendMode = 'normal'
 
-	} else {
+	} else if (main.mouse.relativeX < .50) {
 
 		autruche.blendMode = 'multiply'
+
+	} else if (main.mouse.relativeX < .75) {
+
+		autruche.blendMode = 'screen'
+
+	} else {
+
+		autruche.blendMode = 'overlay'
 
 	}
 
@@ -179,21 +186,21 @@ otarie.on('complete', event => {
 
 })
 
-// getWebcamTracker(['yellow', 'cyan'])
-// 	.on('yellow', event => {
+getWebcamTracker(['yellow', 'cyan'])
+	.on('yellow', event => {
 
-// 		otarie.timeScale = 1
-// 		otarie.paused = false
+		otarie.timeScale = 1
+		otarie.paused = false
 
-// 	})
+	})
 
-// getAudioTracker([.2])
-// 	.on('level-1', event => {
+getAudioTracker([.2])
+	.on('level-1', event => {
 
-// 		otarie.timeScale = -1
-// 		otarie.paused = false
+		otarie.timeScale = -1
+		otarie.paused = false
 
-// 	})
+	})
 
 
 
