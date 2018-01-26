@@ -74,8 +74,8 @@
 
 		blendMode: 'source-over',
 
-		x: 0,
-		y: 0,
+		x: '50%',
+		y: '50%',
 		width: 0,
 		height: 0,
 		rotation: 0,
