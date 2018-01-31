@@ -85,7 +85,9 @@ let main = {
 	enterFullscreen() {
 
 		let stage = document.querySelector('#stage') || document.querySelector('.stage')
-		stage.requestFullscreen()
+		let fullscreen = stage.requestFullscreen || stage.webkitRequestFullscreen
+
+		fullscreen()
 
 	},
 
