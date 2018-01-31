@@ -1,3 +1,21 @@
+let vendorProxy = {
+
+	get fullscreenElement() {
+
+		return document.fullscreenElement || document.webkitFullscreenElement
+
+	},
+
+	get fullscreenChangeEvent() {
+
+		return 'onfullscreenchange' in document ? 'fullscreenchange' :
+			'onwebkitfullscreenchange' in document ? 'webkitfullscreenchange' : 
+			'fullscreenchange'
+
+	},
+
+}
+
 let main = {
 
 	mouse: { 
@@ -26,11 +44,11 @@ let main = {
 
 		})
 
-		document.addEventListener('fullscreenchange', event => {
+		document.addEventListener(vendorProxy.fullscreenChangeEvent, event => {
 
 			setTimeout(() => {
 
-				let scale = this.fullscreenElement ? innerWidth / WIDTH : 1
+				let scale = vendorProxy.fullscreenElement ? innerWidth / WIDTH : 1
 				let stage = document.querySelector('#stage')
 				stage.style.transform = `scale(${scale.toFixed(4)})`
 				
@@ -84,7 +102,7 @@ let main = {
 
 	toggleFullscreen() {
 
-		if (this.fullscreenElement) {
+		if (vendorProxy.fullscreenElement) {
 
 			document.exitFullscreen ? document.exitFullscreen() : document.webkitExitFullscreen()
 
@@ -96,12 +114,6 @@ let main = {
 		}
 
 	},
-
-	get fullscreenElement() {
-
-		return document.fullscreenElement || document.webkitFullscreenElement
-
-	}
 
 }
 
