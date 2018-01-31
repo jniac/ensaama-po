@@ -41,7 +41,7 @@ let main = {
 		document.addEventListener('keydown', event => {
 
 			if (event.key === 'f')
-				this.enterFullscreen()
+				this.toggleFullscreen()
 
 		})
 
@@ -82,12 +82,18 @@ let main = {
 
 	},
 
-	enterFullscreen() {
+	toggleFullscreen() {
 
-		let stage = document.querySelector('#stage') || document.querySelector('.stage')
-		let fullscreen = stage.requestFullscreen || stage.webkitRequestFullscreen
+		if (document.fullscreenElement || document.webkitFullscreenElement) {
 
-		fullscreen()
+			document.exitFullscreen ? document.exitFullscreen() : stage.webkitExitFullscreen()
+
+		} else {
+
+			let stage = document.querySelector('#stage') || document.querySelector('.stage')
+			stage.requestFullscreen ? stage.requestFullscreen() : stage.webkitRequestFullscreen()
+	
+		}
 
 	},
 
