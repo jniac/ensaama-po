@@ -86,7 +86,7 @@ let main = {
 
 		if (document.fullscreenElement || document.webkitFullscreenElement) {
 
-			document.exitFullscreen ? document.exitFullscreen() : stage.webkitExitFullscreen()
+			document.exitFullscreen ? document.exitFullscreen() : document.webkitExitFullscreen()
 
 		} else {
 
