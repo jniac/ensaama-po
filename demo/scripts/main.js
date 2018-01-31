@@ -30,7 +30,7 @@ let main = {
 
 			setTimeout(() => {
 
-				let scale = document.fullscreenElement ? innerWidth / WIDTH : 1
+				let scale = this.fullscreenElement ? innerWidth / WIDTH : 1
 				let stage = document.querySelector('#stage')
 				stage.style.transform = `scale(${scale.toFixed(4)})`
 				
@@ -84,7 +84,7 @@ let main = {
 
 	toggleFullscreen() {
 
-		if (document.fullscreenElement || document.webkitFullscreenElement) {
+		if (this.fullscreenElement) {
 
 			document.exitFullscreen ? document.exitFullscreen() : document.webkitExitFullscreen()
 
@@ -96,6 +96,12 @@ let main = {
 		}
 
 	},
+
+	get fullscreenElement() {
+
+		return document.fullscreenElement || document.webkitFullscreenElement
+
+	}
 
 }
 
