@@ -23,7 +23,6 @@ let footage = new Footage(
 {
 
 	fps: 24, 
-	zIndex: 0,
 
 	enabled: true,
 	loop: true,
@@ -32,8 +31,8 @@ let footage = new Footage(
 
 	blendMode: 'source-over',
 
-	x: 0,
-	y: 0,
+	x: '50%',
+	y: '50%',
 	width: 0,
 	height: 0,
 	rotation: 0,
@@ -45,6 +44,7 @@ let footage = new Footage(
 	anchorY: 0.5,
 
 	opacity: 1,
+	zIndex: 0,
 
 	showEdges: false,
 

@@ -65,7 +65,6 @@
 	let FootageDefaultOptions = { 
 
 		fps: 24, 
-		zIndex: 0,
 
 		enabled: true,
 		loop: true,
@@ -87,6 +86,7 @@
 		anchorY: 0.5,
 
 		opacity: 1,
+		zIndex: 0,
 
 		showEdges: false,
 
@@ -100,7 +100,7 @@
 				return x
 
 			case 'string':
-				return x.slice(-1) === '%' ? (parseFloat(x) / 100 * relativeSpace) : 0
+				return x.slice(-1) === '%' ? parseFloat(x) / 100 * relativeSpace : 0
 
 			default:
 				return 0
