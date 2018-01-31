@@ -26,6 +26,24 @@ let main = {
 
 		})
 
+		document.addEventListener('fullscreenchange', event => {
+
+			setTimeout(() => {
+
+				let scale = document.fullscreenElement ? innerWidth / WIDTH : 1
+				let stage = document.querySelector('#stage')
+				stage.style.transform = `scale(${scale.toFixed(4)})`
+				
+			}, 1000);
+	
+		})
+
+		document.addEventListener('keydown', event => {
+
+			if (event.key === 'f')
+				this.enterFullscreen()
+
+		})
 
 		let ctx = canvas.getContext('2d')
 
@@ -62,7 +80,14 @@ let main = {
 
 		this.updateArray.push({ callback })
 
-	}
+	},
+
+	enterFullscreen() {
+
+		let stage = document.querySelector('#stage')
+		stage.requestFullscreen()
+
+	},
 
 }
 
