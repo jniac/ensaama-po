@@ -2,6 +2,24 @@
 
 	// > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > //
 	//                                                                                         //
+	//                                       footage.js                                        //
+	//                                                                                         //
+	// > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > //
+
+	/**
+	 * 
+	 * v 2
+	 * • images are drawn to canvas (better performance (draw, caching))
+	 * 
+	 * v 1
+	 * • timeScale, opacity
+	 * • images are loaded asynchronously, maxImagesLoading is the number of simultaneous loading images
+	 * • x, y, scale, scaleX, scaleY, rotation
+	 * 
+	 */
+
+	// > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > //
+	//                                                                                         //
 	//                            Gestion du chargement des images                             //
 	//                                                                                         //
 	// > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > //
@@ -10,15 +28,17 @@
 	let numImagesLoading = 0
 	let maxImagesLoading = 20
 
-	function getImage(url) {
+	function getBundle(url) {
 
 		let image = new Image()
+		let canvas = document.createElement('canvas')
+		let bundle = { image, url, canvas }
 
-		imagesToLoad.push({ image, url })
+		imagesToLoad.push(bundle)
 
 		loadNextImages()
 
-		return image
+		return bundle
 
 	}
 
@@ -26,17 +46,23 @@
 
 		while(imagesToLoad.length && numImagesLoading < maxImagesLoading) {
 
-			let { image, url } = imagesToLoad.shift()
+			let { image, url, canvas } = imagesToLoad.shift()
 
-			image.src = url
+			image.src = ''
 
-			image.addEventListener('load', event => {
+			image.addEventListener('load', (image, url, canvas, event => {
+
+				canvas.width = image.naturalWidth
+				canvas.height = image.naturalHeight
+				canvas.getContext('2d').drawImage(image, 0, 0)
+
+				image.src = null
 
 				numImagesLoading--
 
 				loadNextImages()
 
-			})
+			}).bind(null, image, url, canvas))
 
 			numImagesLoading++
 
@@ -164,11 +190,11 @@
 				for (let i = this.startIndex; i <= this.endIndex; i++) {
 
 					let src = this.base + i.toFixed().padStart(this.indexLength, '0') + this.ext
-					let image = getImage(src)
+					let bundle = getBundle(src)
 
 					if (i === this.startIndex) {
 
-						image.addEventListener('load', event => {
+						bundle.image.addEventListener('load', event => {
 
 							this.width = event.target.naturalWidth
 							this.height = event.target.naturalHeight
@@ -177,7 +203,7 @@
 
 					}
 
-					image.addEventListener('load', event => {
+					bundle.image.addEventListener('load', event => {
 
 						loadCount++
 
@@ -190,7 +216,7 @@
 
 					})
 
-					this.images.push(image)
+					this.images.push(bundle.canvas)
 
 				}
 				
@@ -206,19 +232,19 @@
 				this.startIndex = 0
 				this.endIndex = 0
 
-				let image = getImage(startURL)
+				let bundle = getBundle(startURL)
 
-				image.addEventListener('load', event => {
+				bundle.image.addEventListener('load', event => {
 
-					this.width = image.naturalWidth
-					this.height = image.naturalHeight
+					this.width = bundle.image.naturalWidth
+					this.height = bundle.image.naturalHeight
 
 					console.log(`${startURL} has been loaded (${this.width}x${this.height}px one single frame)`)
 					this.dispatchEvent('load')
 
 				})
 
-				this.images.push(image)				
+				this.images.push(bundle.canvas)				
 
 			}
 
@@ -296,7 +322,7 @@
 
 		draw(ctx, offsetX = 0, offsetY = 0) {
 
-			if (!this.currentImage || !this.currentImage.complete)
+			if (!this.currentImage)
 				return
 
 
