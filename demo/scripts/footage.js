@@ -48,7 +48,7 @@
 
 			let { image, url, canvas } = imagesToLoad.shift()
 
-			image.src = ''
+			image.src = url
 
 			image.addEventListener('load', (image, url, canvas, event => {
 
@@ -56,7 +56,7 @@
 				canvas.height = image.naturalHeight
 				canvas.getContext('2d').drawImage(image, 0, 0)
 
-				image.src = null
+				image.src = ''
 
 				numImagesLoading--
 
@@ -97,7 +97,6 @@
 		visible: true,
 		paused: false,
 
-		blendMode: 'source-over',
 
 		x: '50%',
 		y: '50%',
@@ -111,6 +110,7 @@
 		anchorX: 0.5,
 		anchorY: 0.5,
 
+		blendMode: 'source-over',
 		opacity: 1,
 		zIndex: 0,
 
