@@ -9,6 +9,8 @@
 	/**
 	 * 
 	 * v 2
+	 * • fix zIndex bug (due to the instable result of Array.Sort(f) when f returns 0)
+	 *       https://stackoverflow.com/questions/36212839/javascript-sorting-function-incorrectly-changes-elements-position-in-array
 	 * • images are drawn to canvas (better performance (draw, caching))
 	 * 
 	 * v 1
@@ -152,6 +154,8 @@
 			this.time = 0
 			this.timeScale = 1
 			this.timeMax = 0
+
+			this.drawIndex = this.id
 
 			this.images = []
 			
@@ -367,9 +371,16 @@
 
 		static drawAll(ctx) {
 
-			for (let footage of footages.sort((A, B) => A.zIndex - B.zIndex))
+			let drawIndex = 0
+
+			for (let footage of footages.sort((A, B) => A.zIndex - B.zIndex || A.drawIndex - B.drawIndex)) {
+
+				footage.drawIndex = drawIndex++
+				
 				if (footage.enabled && footage.visible)
 					footage.draw(ctx)
+
+			}
 
 		}
 
