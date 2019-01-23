@@ -94,8 +94,18 @@ let playFootageIdle = () => {
 
 }
 
-main.on('color-red', () => {
+
+
+// ici, l'application réagit aux évènements 'colors'
+
+main.colors.on('red', () => {
 
     playFootageOpening()
+
+})
+
+main.colors.on('darkGreen', (event) => {
+
+    console.log('ho, du darkGreen', event)
 
 })

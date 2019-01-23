@@ -147,6 +147,8 @@ let main = {
 
     initColorTracking(colors) {
 
+        events.makeDispatcher(colors)
+
         let canvas = document.querySelector('canvas#tracker')
         let ctx = canvas.getContext('2d')
 
@@ -187,12 +189,18 @@ let main = {
 
                 tracker.emit(rect.color)
 
-                main.fire(`color-${rect.color}`)
+                main.colors.fire(rect.color, { rect })
+
             }
 
         })
 
-        Object.assign(main, { tracker })
+        Object.assign(main, {
+
+            colors,
+            tracker,
+
+        })
 
     },
 
