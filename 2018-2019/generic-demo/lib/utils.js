@@ -35,3 +35,9 @@ function rgbToHsv(r, g, b) {
 	return [h, s, v]
 
 }
+
+function wait(delay) {
+
+    return new Promise(resolve => setTimeout(resolve, delay))
+    
+}
