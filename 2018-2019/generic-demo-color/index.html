@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<script type="text/javascript" src="lib/event.js"></script>
+		<script type="text/javascript" src="lib/events.js"></script>
+		<script type="text/javascript" src="lib/utils.js"></script>
+		<script type="text/javascript" src="lib/color-tracking.js"></script>
+		<script type="text/javascript" src="lib/footage.js"></script>
+		<script type="text/javascript" src="lib/main.js"></script>
+		<!-- <script type="text/javascript" src="lib/speech.js"></script> -->
+		<link rel="stylesheet" href="style.css">
+	</head>
+	<body>
+		<div id="stage">
+			<canvas id="canvas"></canvas>
+			<div id="webcam-helper">
+				<video id="webcam"  width="640" height="480" preload autoplay loop muted></video>
+				<canvas id="tracker" width="640" height="480"></canvas>
+			</div>
+			<div id="ui">
+                <button>un bouton</button>
+			</div>
+		</div>
+		<script src="app.js"></script>
+	</body>
+</html>

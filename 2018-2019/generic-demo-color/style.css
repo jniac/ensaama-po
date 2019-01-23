@@ -1,0 +1,37 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+}
+div#stage {
+    width: 100vw;
+    height: 100vh;
+    background-color: black;
+}
+canvas#canvas {
+    position: absolute;
+    border: solid 1px #0003;
+}
+
+#webcam-helper {
+    position: absolute;
+}
+#webcam-helper, #webcam-helper video#webcam {
+    width: 320px;
+    height: 240px;
+}
+#webcam-helper canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+div#ui {
+    position: absolute;
+    padding: 16px;
+    bottom: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
