@@ -79,6 +79,9 @@ let main = {
 			if (event.key === 'f')
 				main.toggleFullscreen()
 
+			if (event.key === 'h')
+				main.toggleHideWebcam()
+
 		})
 
 		let ctx = canvas.getContext('2d')
@@ -132,6 +135,19 @@ let main = {
 		}
 
 	},
+
+	toggleHideWebcam() {
+
+        let webcam = document.querySelector('#webcam') || document.querySelector('.webcam')
+		if (webcam.style.display === "none") {
+            webcam.style.display = "block";
+        } else {
+            webcam.style.display = "none";
+        }
+
+	},
+
+
 
     pauseColorTracking() {
 
@@ -210,14 +226,6 @@ let main = {
 events.makeDispatcher(main)
 
 
-
-
-
-
-
-
-
-
 // > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > //
 //                                                                                     //
 //                                    VIDEO                                            //
@@ -255,20 +263,6 @@ function getWebcamTracker(colors) {
 	return tracker
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 // > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > //
