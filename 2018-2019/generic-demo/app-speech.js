@@ -49,7 +49,7 @@ let footageOpening = new Footage({
 let playFootageOpening = () => {
 
     // important : lorsque une séquence se joue, il faut suspendre la détection des couleurs
-    main.pauseColorTracking()
+    main.pauseSpeechRecognition()
 
     footageOpening.visible = true
     footageOpening.paused = false
@@ -66,7 +66,7 @@ let playFootageOpening = () => {
 let playFootageIdle = () => {
 
     // important : lorsque l'on revient sur la boucle d'attente, il faut reprendre la détection des couleurs
-    main.resumeColorTracking()
+    main.resumeSpeechRecognition()
 
     footageOpening.visible = false
     footageOpening.paused = true
@@ -91,25 +91,10 @@ let playFootageIdle = () => {
 //                                                                           //
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
 
-// initialisation du color tracking
+main.initSpeechRecognition('chat', 'chien', 'dauphin')
 
-main.initColorTracking({
-
-    red:        ({ hue, saturation, value }) => (hue <= 20 || hue >= 345) && saturation >= 0.75 && value >= 0.25,
-    darkGreen:  ({ hue, saturation, value }) => hue >= 130 && hue <= 160 && saturation >= 0.5 && value >= 0.2 && value <= .5,
-
-})
-
-// ici, l'application réagit aux évènements 'colors'
-
-main.colors.on('red', () => {
+main.words.on('chat', () => {
 
     playFootageOpening()
-
-})
-
-main.colors.on('darkGreen', (event) => {
-
-    console.log('ho, du darkGreen', event)
 
 })

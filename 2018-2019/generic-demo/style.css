@@ -1,6 +1,7 @@
 * {
     box-sizing: border-box;
     margin: 0;
+    font-family: monospace;
 }
 div#stage {
     width: 100vw;
@@ -25,6 +26,17 @@ canvas#canvas {
     left: 0;
     right: 0;
     bottom: 0;
+}
+
+#speech-helper {
+    position: absolute;
+    height: 100%;
+    overflow: auto;
+    padding: 32px;
+    color: #aaa;
+}
+#speech-helper div.event {
+    opacity: .33;
 }
 
 div#ui {

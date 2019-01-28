@@ -220,6 +220,111 @@ let main = {
 
     },
 
+
+
+    pauseSpeechRecognition() {
+
+        main.speechRecognitionPaused = true
+
+    },
+
+    resumeSpeechRecognition() {
+
+        main.speechRecognitionPaused = false
+
+    },
+
+    initSpeechRecognition(...array) {
+
+        array = array.map((word) => {
+
+            let str = word.toLowerCase()
+            let re = new RegExp(`\\b${str}\\b`)
+            let count = 0
+            return { re, str }
+
+        })
+
+        let words = { array }
+
+        for (let word of array)
+            words[word.str] = word
+
+        events.makeDispatcher(words)
+
+        let recognitionEvents = 'onaudiostart onsoundstart onspeechstart onspeechend onsoundend onaudioend onresult onnomatch onerror onstart onend'.split(' ')
+
+        let print = (str, className = 'transcript') => {
+
+            let div = document.createElement('div')
+            div.innerHTML = str
+            div.classList.add(className)
+            document.querySelector('#speech-helper .output').append(div)
+
+            console.log(str)
+
+        }
+
+        let onResult = (event) => {
+
+            if (main.speechRecognitionPaused)
+                return
+
+            let lastIndex = event.results.length - 1
+            let { transcript, confidence } = event.results[lastIndex][0]
+
+            print(`${transcript} (${confidence.toFixed(2)})`)
+
+            for (let word of words.array) {
+
+                if (word.re.test(transcript)) {
+
+                    word.count++
+                    words.fire(word.str, { transcript })
+
+                }
+
+            }
+
+        }
+
+        let startSpeechRecognition = () => {
+
+            var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition
+            var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList
+            var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEvent
+
+            let recognition = new SpeechRecognition()
+            let speechRecognitionList = new SpeechGrammarList()
+            let grammar = `#JSGF V1.0; grammar colors; public <color> = girafe`
+            speechRecognitionList.addFromString(grammar, 1)
+
+            recognition.continuous = true
+            recognition.lang = 'fr-FR'
+            recognition.interimResults = false
+            recognition.maxAlternatives = 1
+
+            recognition.start()
+            recognition.addEventListener('result', onResult)
+
+            // debug: log recognitionEvents
+            // for (let name of recognitionEvents)
+            //     recognition[name] = event => print(event.type, 'event')
+
+        }
+
+        startSpeechRecognition()
+
+        setInterval(startSpeechRecognition, 15 * 1e3)
+
+        Object.assign(main, {
+
+            words,
+
+        })
+
+    },
+
 }
 
 // eventjs.implementEventDispatcher(main)
