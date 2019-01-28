@@ -1,3 +1,5 @@
+// https://github.com/jniac/js-events
+
 var events = (function (exports) {
 	'use strict';
 
