@@ -144,6 +144,8 @@
 
 	class Footage {
 
+        get footages() { return footages }
+
 		constructor({ startURL, endURL, ...options }) {
 
 			Object.assign(this, FootageDefaultOptions, options)
@@ -159,6 +161,9 @@
 			this.drawIndex = this.id
 
 			this.images = []
+
+            this.loading = true
+            this.loaded = false
 
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
 
@@ -214,8 +219,16 @@
 
 						if (loadCount == this.numOfFrames) {
 
+                            this.loading = false
+                            this.loaded = true
+
 							console.log(`${this.base} has been loaded (${this.width}x${this.height}px ${this.numOfFrames} frames)`)
 							this.fire('load')
+
+                            let everyFootageHasLoaded = footages.every(footage => footage.loaded)
+
+                            if (everyFootageHasLoaded)
+                                Footage.fire('load-all')
 
 						}
 
@@ -390,6 +403,7 @@
 
 	}
 
+    events.makeDispatcher(Footage)
     events.makeDispatcher(Footage.prototype)
 
 	function anim() {
