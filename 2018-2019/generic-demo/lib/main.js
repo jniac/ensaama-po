@@ -273,6 +273,8 @@ let main = {
             let lastIndex = event.results.length - 1
             let { transcript, confidence } = event.results[lastIndex][0]
 
+            transcript = transcript.toLowerCase()
+
             print(`${transcript} (${confidence.toFixed(2)})`)
 
             for (let word of words.array) {
