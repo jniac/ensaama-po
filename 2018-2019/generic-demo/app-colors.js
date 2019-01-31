@@ -42,6 +42,8 @@ let footageOpening = new Footage({
 
 })
 
+Footage.on('load-all', () => alert('all footages have been loaded'))
+
 
 
 // lecture des métrages :
